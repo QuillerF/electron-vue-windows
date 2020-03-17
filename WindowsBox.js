@@ -28,6 +28,7 @@ class WindowsBox {
     config = config || {}
     this.freeWindowNum = config.freeWindowNum || 1 // 允许空闲的窗口数量
     this.port = config.port || 9080
+    this.htmlName = config.htmlName || 'index'
     this.router = '/__BACKGROUND__'
     this._windowList = [] // 窗口容器
     this.baseWindowConfig = {
