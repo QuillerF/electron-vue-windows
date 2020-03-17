@@ -356,7 +356,7 @@ class WindowsBox {
     tween.easing(TWEEN.Easing[graphs[0]][graphs[1]])
     animateId = setInterval(function() {
       TWEEN.update()
-    }, 17)
+    }, 20)
   }
 
   /*
