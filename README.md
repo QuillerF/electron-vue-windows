@@ -1,16 +1,22 @@
 ## 功能介绍
 
-主要针对electron-vue做的插件，必在electron-vue的基础上使用，针对electron-vue中打开新的无边框窗口缓慢、传参困难等问题做的优化，安装方式简单、使用简单, 点击[这里](https://github.com/hxkuc/electron-ui)可以查看简单的demo
-- 说明：由于C++原生插件安装起来有一定的难度，为了更好的支持用户从1.0.39开始，默认的窗口高斯模糊效果为选装功能，@hxkuc/electron-vibrancy插件不再自动安装，如果需要开启vibrancy属性请先安装@hxkuc/electron-vibrancy
+本插件是基于 electron-vue-windows 插件做的有限修改:新增了 electron 多文件入口时的参数 htmlName 挂载文件名
+
+主要针对 electron-vue 做的插件，必在 electron-vue 的基础上使用，针对 electron-vue 中打开新的无边框窗口缓慢、传参困难等问题做的优化，安装方式简单、使用简单, 点击[这里](https://github.com/hxkuc/electron-ui)可以查看简单的 demo
+
+- 说明：由于 C++原生插件安装起来有一定的难度，为了更好的支持用户从 1.0.39 开始，默认的窗口高斯模糊效果为选装功能，@hxkuc/electron-vibrancy 插件不再自动安装，如果需要开启 vibrancy 属性请先安装@hxkuc/electron-vibrancy
 
 ## 安装步骤
 
-首先安装electron-vue
+首先安装 electron-vue
 然后安装此插件执行如下操作
+
 ```
 npm i -S electron-vue-windows
 ```
-在renderer/main.js里初始化加入以下代码（注意本插件依赖于vue和vue-router需要在vue和vue-router初始化完毕再加载）
+
+在 renderer/main.js 里初始化加入以下代码（注意本插件依赖于 vue 和 vue-router 需要在 vue 和 vue-router 初始化完毕再加载）
+
 ```
 import Vue from 'vue'
 import router from './router' // 此处router文件为你的路由配置文件
@@ -18,83 +24,95 @@ import Win from 'electron-vue-windows'
 // 初始化插件，要传入实例化的路由
 Win.init(router, {
   freeWindowNum: 2, // 初始空闲窗口数量（选填：默认为1）
+  htmlName: 'mainWin' // 默认为index
   port: 9080 // 端口号（选填：默认9080）
 })
 Vue.prototype.$Win = Win
 ```
+
 ## 使用插件
 
 index.vue
+
 ```
 let data = await this.$Win.openWin({
   // browserwindow原生属性
   width: 700, // 窗口宽
   height: 600, // 窗口高
-  
+
   // electron-vue-windows自定义的属性
   windowConfig: {
     router: '/user', // 路由 *必填
-    data: {id: 1}, // 传送数据 
+    data: {id: 1}, // 传送数据
     name: 'user' // 窗口名称
   }
 })
 console.log(data) // 新窗口返回的数据 {value: 2}
 ```
+
 user.vue
+
 - 获取传入的参数
+
 ```
 let data = this.$Win.getParameter()
 console.log(data) // {id: 1}
 ```
+
 - 返回数据并关闭当前窗口
+
 ```
 let data = {value: 2}
 this.$Win.closeWin(data)
 ```
 
 ## 注意事项
-- 因为electron-vue默认打开开发者调试工具，如果在调试工具和窗口分离的情况下隐藏窗口的调试工具会展现出来，如果想隐藏掉可以修改main/index.dev.js文件如下
+
+- 因为 electron-vue 默认打开开发者调试工具，如果在调试工具和窗口分离的情况下隐藏窗口的调试工具会展现出来，如果想隐藏掉可以修改 main/index.dev.js 文件如下
+
 ```
 // Install `electron-debug` with `devtron`
 require('electron-debug')({ showDevTools: true }) // 把true改成false即可（在页面上按f12一样可以调出开发者工具）
 ```
-- 本插件主要适用于无边框窗口的优化，致力于用electron制作
+
+- 本插件主要适用于无边框窗口的优化，致力于用 electron 制作
 
 ## 可能遇到的问题
-由于使用了c++原生模块，所以在安装本插件时可能会遇到已下的问题，大概说下解决方案
 
-1.没有安装python导致的报错
+由于使用了 c++原生模块，所以在安装本插件时可能会遇到已下的问题，大概说下解决方案
+
+1.没有安装 python 导致的报错
 ![image.png](https://upload-images.jianshu.io/upload_images/13048954-de877bc79c767fad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-解决办法：安装python，具体方法可以参考node-gyp的文档 https://github.com/nodejs/node-gyp
+解决办法：安装 python，具体方法可以参考 node-gyp 的文档 https://github.com/nodejs/node-gyp
 
 2.
 ![image.png](https://upload-images.jianshu.io/upload_images/13048954-1984ebec59bac82b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-解决办法： 安装electron-rebuild参考文档：https://electronjs.org/docs/tutorial/using-native-node-modules
+解决办法： 安装 electron-rebuild 参考文档：https://electronjs.org/docs/tutorial/using-native-node-modules
 
 3.
 ![image.png](https://upload-images.jianshu.io/upload_images/13048954-e277b87e7c1c7cc1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-解决方法：和第一个报错一样，如果还报错看看是不是没有设置环境变量，或者python版本不对引起的
+解决方法：和第一个报错一样，如果还报错看看是不是没有设置环境变量，或者 python 版本不对引起的
 
 4.
 ![image.png](https://upload-images.jianshu.io/upload_images/13048954-f481b4fc629adcf1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-解决办法： 使用electron-rebuild重新rebuild，`npm install --save-dev electron-rebuild` 然后`.\node_modules\.bin\electron-rebuild.cmd`，具体可参考https://electronjs.org/docs/tutorial/using-native-node-modules
-5.
+解决办法： 使用 electron-rebuild 重新 rebuild，`npm install --save-dev electron-rebuild` 然后`.\node_modules\.bin\electron-rebuild.cmd`，具体可参考https://electronjs.org/docs/tutorial/using-native-node-modules 5.
 ![image.png](https://upload-images.jianshu.io/upload_images/13048954-7db28d7b5d9cac22.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-解决办法： 网络原因，重新执行rebuild
+解决办法： 网络原因，重新执行 rebuild
 
-
-## API介绍
+## API 介绍
 
 在子进程中使用
 
 ## createWin(option)
+
 - 作用： 创建一个窗口
 - 参数： `option: {object}`
 - 返回： `BrowserWindow`实例
+
 ```
 option = {
   // 以下为暂时支持的原生属性
@@ -129,8 +147,10 @@ option = {
   }
 }
 ```
-- 用法： 
-创建一个普通窗口
+
+- 用法：
+  创建一个普通窗口
+
 ```
 // 创建窗口
 let win = this.$Win.createWin({
@@ -148,55 +168,62 @@ win.show()
 this.$Win.closeWin()
 win.close() // 不推荐
 ```
-创建模糊透明窗口（vibrancy属性设置为true）
+
+创建模糊透明窗口（vibrancy 属性设置为 true）
+
 ```
 let win = this.$Win.createWin({
   width: 800,
-  height: 600,  
+  height: 600,
   windowConfig: {
     router: '/index',
-    name: 'index', // 窗口名字，如果该name窗口存在会直接显示，不会重新创建    
-    vibrancy: true  
+    name: 'index', // 窗口名字，如果该name窗口存在会直接显示，不会重新创建
+    vibrancy: true
   }
 })
 win.show()
 
 ```
+
 创建窗口从左侧划入并发送数据
+
 ```
  let win = this.$Win.createWin({
   width: 800,
-  height: 600,   
+  height: 600,
   windowConfig: {
     router: '/index',
-    name: 'index', // 窗口名字，如果该name窗口存在会直接显示，不会重新创建    
+    name: 'index', // 窗口名字，如果该name窗口存在会直接显示，不会重新创建
     animation: 'fromLeft',
     data: {index: 1}
   }
 })
 win.show()
 ```
+
 自定义动画--创建一个窗口从左上角滑到中间
+
 ```
 let win = this.$Win.createWin({
   width: 800,
-  height: 600,   
+  height: 600,
   windowConfig: {
     router: '/index',
-    name: 'index', // 窗口名字，如果该name窗口存在会直接显示，不会重新创建    
+    name: 'index', // 窗口名字，如果该name窗口存在会直接显示，不会重新创建
     customAnimation: {
       fromPosition: {x: 0, y: 0}, // 窗口动画起点
       time: 1000, // 动画时间
       graphs: 'Quartic.InOut' // 动画过度曲线
-    }, 
+    },
     data: {index: 1}
   }
 })
 win.show()
 ```
+
 动画曲线`graphs`参考： http://tweenjs.github.io/tween.js/examples/03_graphs.html
 
-- 说明： 为什么不支持browserwindow的其他参数，因为createWin函数调用的窗口是已经初始化了的窗口，所以只能动态的改变窗口的属性，如果browserwindow没有提供动态改变的接口，或者有些属性需要重载窗口的是不能使用的，这里增加的windowConfig配置是自定义的属性就是原browserwindow没有的所以单独放到一个对象里面便于区分，事实上大部分的功能都是依赖于这个对象的属性
+- 说明： 为什么不支持 browserwindow 的其他参数，因为 createWin 函数调用的窗口是已经初始化了的窗口，所以只能动态的改变窗口的属性，如果 browserwindow 没有提供动态改变的接口，或者有些属性需要重载窗口的是不能使用的，这里增加的 windowConfig 配置是自定义的属性就是原 browserwindow 没有的所以单独放到一个对象里面便于区分，事实上大部分的功能都是依赖于这个对象的属性
 
 ## openWin(option)
 
@@ -204,58 +231,72 @@ win.show()
 - 参数：`option: {object}` 同`createWin`
 - 返回：`return {promise}` 窗口回调过来的数据
 - 用法：
-打开一个窗口并等待数据返回
-index.vue
+  打开一个窗口并等待数据返回
+  index.vue
+
 ```
 let data = await this.$Win.openWin({
   // browserwindow原生属性
   width: 700, // 窗口宽
   height: 600, // 窗口高
-  
+
   // electron-vue-windows自定义的属性
   windowConfig: {
     router: '/user', // 路由 *必填
-    data: {id: 1}, // 传送数据 
+    data: {id: 1}, // 传送数据
     name: 'user' // 窗口名称
   }
 })
 console.log(data) // 新窗口返回的数据 {value: 2}
 ```
+
 user.vue
+
 - 获取传入的参数
+
 ```
 let data = this.$Win.getParameter()
 console.log(data) // {id: 1}
 ```
+
 - 返回数据并关闭当前窗口
+
 ```
 let data = {value: 2}
 this.$Win.closeWin(data)
 ```
+
 ## getParameter()
+
 - 作用： 获取窗口传参
 - 返回： `data: {object}`
-- 用法： 
+- 用法：
+
 ```
 let data = this.$Win.getParameter()
 console.log(data) // {id: 1}
 ```
 
 ## closeWin(data, win)
+
 - 作用： 关闭一个窗口
 - 参数：data:{object}要传回的数据，win: {browserwindow}窗口实例
 - 用法：
-关闭当前窗口并发送数据
+  关闭当前窗口并发送数据
+
 ```
 this.$Win.closeWin({value:1})
 ```
-关闭name为'name'窗口
+
+关闭 name 为'name'窗口
+
 ```
 let win = this.$Win.getWinByName('name')
 this.$Win.closeWin({value:1}, win)
 ```
-## exitWin(data, win)
-- 作用：复用窗口的退出，只用在复用窗口上，用于关闭后台窗口进程
-- 参数： 同closeWin
-- 用法： 同closeWin
 
+## exitWin(data, win)
+
+- 作用：复用窗口的退出，只用在复用窗口上，用于关闭后台窗口进程
+- 参数： 同 closeWin
+- 用法： 同 closeWin
