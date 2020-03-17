@@ -1,9 +1,9 @@
 const { remote, ipcRenderer } = require('electron')
-const WindowsBox = remote.require('electron-vue-windows')
+const WindowsBox = remote.require('electron-vue-windows-sigma')
 const events = require('events')
 
 class Win {
-  constructor () {
+  constructor() {
     this.win = remote.getCurrentWindow()
     this.WindowsBox = null
     this.Event = new events.EventEmitter()
@@ -12,14 +12,14 @@ class Win {
   /*
    * 通用弹窗函数
    */
-  openWin (option, isWin) {
+  openWin(option, isWin) {
     let win = isWin ? option : this.createWin(option)
     win.show()
     // 防止对象被销毁
     let winId = win.id
     this.Event.removeAllListeners('_openWindowMsg' + winId)
     return new Promise((resolve, reject) => {
-      this.Event.once('_openWindowMsg' + winId, (data) => {
+      this.Event.once('_openWindowMsg' + winId, data => {
         resolve(data.data)
       })
     })
@@ -28,7 +28,7 @@ class Win {
   /*
    * 关闭弹窗并且发送数据
    */
-  closeWin (data, win) {
+  closeWin(data, win) {
     // 判断是否是复用窗口
     win = win || this.win
     let _windowInfo = this.WindowsBox.getWindowInfoById(win.id)
@@ -63,7 +63,7 @@ class Win {
   /*
    * 复用窗口的关闭
    */
-  exitWin (data, win) {
+  exitWin(data, win) {
     win = win || this.win
     let _windowInfo = this.WindowsBox.getWindowInfoById(win.id)
     _windowInfo.reuse = false
@@ -74,7 +74,7 @@ class Win {
   /*
    * 创建新的窗口并返回窗口对象（不显示用于绑定事件）
    */
-  createWin (option) {
+  createWin(option) {
     if (!option.windowConfig) {
       option.windowConfig = {}
     }
@@ -104,16 +104,16 @@ class Win {
   /*
    * 获取当前页面传递过来的参数
    */
-  getParameter () {
+  getParameter() {
     return this.WindowsBox.getWindowInfoById(this.win.id).sendMsg
   }
 
   /*
    * 初始化
    */
-  init (router, config) {
+  init(router, config) {
     // 初始化router，增加空白路由__BACKGROUND__
-    router.options.routes.push({path: '/__BACKGROUND__', component: { template: '<div></div>' }})
+    router.options.routes.push({ path: '/__BACKGROUND__', component: { template: '<div></div>' } })
     router.addRoutes(router.options.routes)
     // 初始化box
     if (!this.WindowsBox) {
@@ -125,7 +125,7 @@ class Win {
   /*
    * 给新窗口绑定close和resize事件（如果页面刷新要手动解除之前的监听事件）
    */
-  addEventListenerForWindow (router) {
+  addEventListenerForWindow(router) {
     let eventFun = (event, arg) => {
       this.Event.emit('_windowToMsg', arg)
     }
@@ -150,7 +150,8 @@ class Win {
       // 什么情况下应该关闭应用--all中只剩空窗和当前窗口才关闭
       for (var i = allWindows.length - 1; i >= 0; i--) {
         let key = _windowList.indexOf(allWindows[i].id)
-        if (allWindows[i].id != this.win.id && (key < 0 || (key > -1 && this.WindowsBox.getWindowInfoById(_windowList[key]).isUse))) appShouldQuit = false
+        if (allWindows[i].id != this.win.id && (key < 0 || (key > -1 && this.WindowsBox.getWindowInfoById(_windowList[key]).isUse)))
+          appShouldQuit = false
       }
       if (appShouldQuit) remote.app.quit()
       // 删除主进程监听
@@ -186,8 +187,8 @@ class Win {
    * 接收无状态立即响应数据
    * 无name接受所有
    */
-  getMsg (fun, winList) {
-    this.Event.on('_windowToMsg', (data) => {
+  getMsg(fun, winList) {
+    this.Event.on('_windowToMsg', data => {
       //  先判断是否有该窗口的信息
       if (data.winList.length) {
         let name = this.getThisWindowName()
@@ -212,7 +213,7 @@ class Win {
    * 发送无状态立即响应的数据
    * {fromWinName: '',fromWinId: '', toWinName: '', toWinId: '', data: {}}
    */
-  sendMsg (data, winList) {
+  sendMsg(data, winList) {
     let _data = {
       data: data,
       winList: winList || []
@@ -233,7 +234,7 @@ class Win {
    * @author: huang
    * 支持多个属性判断
    */
-  inArray (obj, array) {
+  inArray(obj, array) {
     let key = -1
     array.forEach((row, index) => {
       let ishave = true
@@ -250,14 +251,14 @@ class Win {
   /*
    * 获取窗口的名字
    */
-  getThisWindowName () {
+  getThisWindowName() {
     return this.WindowsBox.getWindowInfoById(this.win.id).name
   }
 
   /*
    * 根据窗口名称获取窗口对象
    */
-  getWinByName (name) {
+  getWinByName(name) {
     let winList = this.WindowsBox.getWindowList()
     let winInfo = winList.filter(row => row.name === name).shift()
     return winInfo ? remote.BrowserWindow.fromId(winInfo.id) : null
@@ -266,7 +267,7 @@ class Win {
   /*
    * 动画
    */
-  animation (option) {
+  animation(option) {
     if (!option.win) {
       option.win = this.win
     }
@@ -280,7 +281,7 @@ class Win {
    * 跳转路由
    * @parame option {object} {win: win, name: '', data: {}, router: ''}
    */
-  routerPush (option) {
+  routerPush(option) {
     if (!option.win && !option.name) {
       option.win = this.win
     }

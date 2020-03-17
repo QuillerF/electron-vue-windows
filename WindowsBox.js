@@ -24,7 +24,7 @@ const TWEEN = require('@tweenjs/tween.js')
  */
 
 class WindowsBox {
-  constructor (config) {
+  constructor(config) {
     config = config || {}
     this.freeWindowNum = config.freeWindowNum || 1 // 允许空闲的窗口数量
     this.port = config.port || 9080
@@ -49,7 +49,7 @@ class WindowsBox {
   /*
    * 打开新的空白窗口等待加载
    */
-  creatFreeWindow (option) {
+  creatFreeWindow(option) {
     const config = Object.assign({}, this.baseWindowConfig, option)
     if (option && option.parent) {
       config.parent = this.getWinById(option.parent)
@@ -89,8 +89,7 @@ class WindowsBox {
       const [width, height] = win.getContentSize()
       for (let wc of webContents.getAllWebContents()) {
         // Check if `wc` belongs to a webview in the `win` window.
-        if (wc.hostWebContents &&
-          wc.hostWebContents.id === win.webContents.id) {
+        if (wc.hostWebContents && wc.hostWebContents.id === win.webContents.id) {
           wc.setSize({
             normal: {
               width: width,
@@ -102,8 +101,8 @@ class WindowsBox {
     })
 
     let modalPath = this.isPackaged()
-      ? path.join('file://', __dirname, '../../dist/electron/') + 'index.html#' + this.router
-      : 'http:localhost:' + this.port + '/index.html#' + this.router
+      ? `file://${__dirname}/${this.htmlName}.html#${this.router}`
+      : `http://localhost:${this.port}/${this.htmlName}.html#${this.router}`
     win.loadURL(modalPath)
     return win
   }
@@ -111,7 +110,7 @@ class WindowsBox {
   /*
    * 平衡空白窗口数量
    */
-  checkFreeWindow () {
+  checkFreeWindow() {
     // 如果有缓存，查找空余窗口是否足够，不足的话创建到给定水平（同时删掉可能多出来的窗口）
     let notUseWindowNum = 0
     this._windowList.forEach(row => {
@@ -130,7 +129,7 @@ class WindowsBox {
    * 暂时支持初始几个参数
    * {width,height,model,router}
    */
-  getFreeWindow (option) {
+  getFreeWindow(option) {
     // 怎么配置参数
     // 怎么绑定事件
     // 暂时支持简单的参数（width，height，frame, transform等）
@@ -219,7 +218,7 @@ class WindowsBox {
   /*
    * @desc 更新队列
    */
-  refreshFreeWindowInfo (freeWindowInfo, option) {
+  refreshFreeWindowInfo(freeWindowInfo, option) {
     freeWindowInfo.router = option.windowConfig.router
     freeWindowInfo.sendMsg = option.windowConfig.data || {}
     freeWindowInfo.isUse = true
@@ -233,7 +232,7 @@ class WindowsBox {
    * @desc 获取基础配置
    * {vibrancy, width, height, minimizable, maximizable, resizable, x, y, center, alwaysOnTop, skipTaskbar}
    */
-  getBaseConfig (option, freeWindow) {
+  getBaseConfig(option, freeWindow) {
     let config = {}
     // 判断配置中是否有动画
     let noAnimation = !option.windowConfig.animation && !option.windowConfig.customAnimation
@@ -297,7 +296,7 @@ class WindowsBox {
    * @desc 获取结束动画配置
    *
    */
-  getToConfig (option) {
+  getToConfig(option) {
     let config = {}
     config.x = option.x
     config.y = option.y
@@ -310,9 +309,9 @@ class WindowsBox {
    * @desc 新窗口路由跳转option
    * @parame option {object} {win: win, name: '', data: {}, router: ''}
    */
-  windowRouterChange (win, router) {
+  windowRouterChange(win, router) {
     if (win.webContents.isLoading()) {
-      win.webContents.once('did-finish-load', function () {
+      win.webContents.once('did-finish-load', function() {
         win.webContents.send('_changeModelPath', router)
       })
     } else {
@@ -324,7 +323,7 @@ class WindowsBox {
    * @desc 跳转动画
      @param {win: win, from: {}, to:{}, time: 1000, graphs: ''}
    */
-  animation (option) {
+  animation(option) {
     if (!option.win) {
       return
     }
@@ -344,15 +343,17 @@ class WindowsBox {
     TWEEN.removeAll()
     let tween = new TWEEN.Tween(option.from)
       .to(option.to, option.time)
-      .onUpdate(function (a) {
+      .onUpdate(function(a) {
         option.win.setPosition(parseInt(a.x), parseInt(a.y))
         option.win.setOpacity(a.opacity)
-      }).onComplete(function () {
+      })
+      .onComplete(function() {
         clearInterval(animateId)
-      }).start()
+      })
+      .start()
     let graphs = option.graphs.split('.')
     tween.easing(TWEEN.Easing[graphs[0]][graphs[1]])
-    animateId = setInterval(function () {
+    animateId = setInterval(function() {
       TWEEN.update()
     }, 17)
   }
@@ -362,7 +363,7 @@ class WindowsBox {
    * 目前需要手动调整的后期根据需求加入
    * @param {object} config:{vibrancy, width, height, minimizable, maximizable, resizable, x, y, center, alwaysOnTop, skipTaskbar}
    */
-  setWindowConfig (config, freeWindow) {
+  setWindowConfig(config, freeWindow) {
     // 是否开启背景模糊
     if (config.vibrancy) {
       freeWindow.on('resize', () => {
@@ -417,7 +418,7 @@ class WindowsBox {
   /*
    * 取出一个空白窗口并且返回（仅仅取出对象）
    */
-  getNewWindow (option) {
+  getNewWindow(option) {
     // 是否父子窗口
     if (option.parent) {
       let win = this.creatFreeWindow(option)
@@ -437,7 +438,7 @@ class WindowsBox {
    * 路由跳转
    * @parame option {object} {win: win, name: '', data: {}, router: ''}
    */
-  routerPush (option) {
+  routerPush(option) {
     // 先跳转路由，然后重新设置基础数据
     // 如果没有win和name直接返回
     if (!option.win && !option.name) return
@@ -456,19 +457,19 @@ class WindowsBox {
     this.setWindowInfo(windowInfo)
   }
 
-  getWindowInfoById (id) {
+  getWindowInfoById(id) {
     return this._windowList.find(row => row.id === id)
   }
 
-  getWindowInfoByName (name) {
+  getWindowInfoByName(name) {
     return this._windowList.find(row => row.name === name)
   }
 
-  getWinById (id) {
+  getWinById(id) {
     return BrowserWindow.fromId(id)
   }
 
-  getWinByName (name) {
+  getWinByName(name) {
     let windowInfo = this.getWindowInfoByName(name)
     if (!windowInfo) return
     return this.getWinById(windowInfo.id)
@@ -477,18 +478,18 @@ class WindowsBox {
   /*
    * 设置窗口的数据
    */
-  setWindowInfo (data) {
-    this._windowList = this._windowList.map(row => row.id === data.id ? data : row)
+  setWindowInfo(data) {
+    this._windowList = this._windowList.map(row => (row.id === data.id ? data : row))
   }
 
   /*
    * 获取windowList对象
    */
-  getWindowList () {
+  getWindowList() {
     return this._windowList
   }
 
-  isPackaged () {
+  isPackaged() {
     const execFile = path.basename(process.execPath).toLowerCase()
     if (process.platform === 'win32') {
       return execFile !== 'electron.exe'
