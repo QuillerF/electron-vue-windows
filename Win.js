@@ -142,21 +142,21 @@ class Win {
         remote.BrowserWindow.fromId(_windowInfo.fromId).webContents.send('_openWindowMsg', data)
       }
 
-      // 如果只剩下空白的窗口就关掉应用
-      let allWindows = remote.BrowserWindow.getAllWindows()
-      let _windowList = this.WindowsBox.getWindowList().map(row => row.id)
-      let appShouldQuit = true
-      // all是所有的窗口，list是储存的窗口
-      // 什么情况下应该关闭应用--all中只剩空窗和当前窗口才关闭
-      for (var i = allWindows.length - 1; i >= 0; i--) {
-        let key = _windowList.indexOf(allWindows[i].id)
-        if (allWindows[i].id != this.win.id && (key < 0 || (key > -1 && this.WindowsBox.getWindowInfoById(_windowList[key]).isUse)))
-          appShouldQuit = false
-      }
-      if (appShouldQuit) remote.app.quit()
+      // // 如果只剩下空白的窗口就关掉应用
+      // let allWindows = remote.BrowserWindow.getAllWindows()
+      // let _windowList = this.WindowsBox.getWindowList().map(row => row.id)
+      // let appShouldQuit = true
+      // // all是所有的窗口，list是储存的窗口
+      // // 什么情况下应该关闭应用--all中只剩空窗和当前窗口才关闭
+      // for (var i = allWindows.length - 1; i >= 0; i--) {
+      //   let key = _windowList.indexOf(allWindows[i].id)
+      //   if (allWindows[i].id != this.win.id && (key < 0 || (key > -1 && this.WindowsBox.getWindowInfoById(_windowList[key]).isUse)))
+      //     appShouldQuit = false
+      // }
+      // if (appShouldQuit) remote.app.quit()
       // 删除主进程监听
       remote.ipcMain.removeListener('_windowToMsg', eventFun)
-      this.win = null
+      // this.win = null
     }
 
     window.addEventListener('beforeunload', () => {

@@ -74,15 +74,15 @@ class WindowsBox {
         // 先push出数组
         this._windowList = this._windowList.filter(row => row.id !== winId)
         // 如果只剩下空白的窗口就关掉应用
-        let allWindows = BrowserWindow.getAllWindows()
-        let _windowList = this._windowList.map(row => row.id)
-        let appShouldQuit = true
-        for (var i = allWindows.length - 1; i >= 0; i--) {
-          let key = _windowList.indexOf(allWindows[i].id)
-          if (allWindows[i].id != winId && (key < 0 || (key > -1 && this.getWindowInfoById(_windowList[key]).isUse))) appShouldQuit = false
-        }
-        if (appShouldQuit) app.quit()
-        win = null
+        // let allWindows = BrowserWindow.getAllWindows()
+        // let _windowList = this._windowList.map(row => row.id)
+        // let appShouldQuit = true
+        // for (var i = allWindows.length - 1; i >= 0; i--) {
+        //   let key = _windowList.indexOf(allWindows[i].id)
+        //   if (allWindows[i].id != winId && (key < 0 || (key > -1 && this.getWindowInfoById(_windowList[key]).isUse))) appShouldQuit = false
+        // }
+        // if (appShouldQuit) app.quit()
+        // win = null
       }, 100)
     })
 
