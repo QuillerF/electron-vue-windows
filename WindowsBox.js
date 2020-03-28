@@ -102,9 +102,10 @@ class WindowsBox {
       }
     })
 
-    let modalPath = this.isPackaged()
-      ? `file://${this.selfDirname}/${this.htmlName}.html#${this.router}`
-      : `http://localhost:${this.port}/${this.htmlName}.html#${this.router}`
+    // let modalPath = this.isPackaged()
+    //   ? `file://${this.selfDirname}/${this.htmlName}.html#${this.router}`
+    //   : `http://localhost:${this.port}/${this.htmlName}.html#${this.router}`
+    let modalPath = `file://${this.selfDirname}/${this.htmlName}.html#${this.router}`
     win.loadURL(modalPath)
     win.openDevTools()
     console.log('挂载路径', modalPath)
