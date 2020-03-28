@@ -29,6 +29,7 @@ class WindowsBox {
     this.freeWindowNum = config.freeWindowNum || 1 // 允许空闲的窗口数量
     this.port = config.port || 9080
     this.htmlName = config.htmlName || 'index'
+    this.selfDirname = config.selfDirname || __dirname
     this.router = '/__BACKGROUND__'
     this._windowList = [] // 窗口容器
     this.baseWindowConfig = {
@@ -102,7 +103,7 @@ class WindowsBox {
     })
 
     let modalPath = this.isPackaged()
-      ? `${path.join('file://', __dirname, '../../dist/electron/')}/${this.htmlName}.html#${this.router}`
+      ? `file://${this.selfDirname}/${this.htmlName}.html#${this.router}`
       : `http://localhost:${this.port}/${this.htmlName}.html#${this.router}`
     win.loadURL(modalPath)
     win.openDevTools()
