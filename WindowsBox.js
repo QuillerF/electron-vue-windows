@@ -105,6 +105,7 @@ class WindowsBox {
       ? `${path.join('file://', __dirname, '../../dist/electron/')}/${this.htmlName}.html#${this.router}`
       : `http://localhost:${this.port}/${this.htmlName}.html#${this.router}`
     win.loadURL(modalPath)
+    win.webContents.openDevTools()
     console.log('挂载路径', modalPath)
     return win
   }
