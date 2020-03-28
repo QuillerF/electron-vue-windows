@@ -102,9 +102,10 @@ class WindowsBox {
     })
 
     let modalPath = this.isPackaged()
-      ? `file://${__dirname}/${this.htmlName}.html#${this.router}`
+      ? `${path.join('file://', __dirname, '../../dist/electron/')}/${this.htmlName}.html#${this.router}`
       : `http://localhost:${this.port}/${this.htmlName}.html#${this.router}`
     win.loadURL(modalPath)
+    console.log('挂载路径', modalPath)
     return win
   }
 
@@ -491,11 +492,7 @@ class WindowsBox {
   }
 
   isPackaged() {
-    const execFile = path.basename(process.execPath).toLowerCase()
-    if (process.platform === 'win32') {
-      return execFile !== 'electron.exe'
-    }
-    return execFile !== 'electron'
+    return process.env.NODE_ENV !== 'development'
   }
 }
 
