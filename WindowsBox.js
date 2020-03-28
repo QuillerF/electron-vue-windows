@@ -30,10 +30,11 @@ class WindowsBox {
     this.port = config.port || 9080
     this.htmlName = config.htmlName || 'index'
     this.selfDirname = config.selfDirname || __dirname
+    this.isPackaged = config.isPackaged
     this.router = '/__BACKGROUND__'
     this._windowList = [] // 窗口容器
     this.baseWindowConfig = {
-      webPreferences: { webSecurity: this.isPackaged(), nodeIntegration: true },
+      webPreferences: { webSecurity: this.isPackaged, nodeIntegration: true },
       show: false,
       transparent: true,
       frame: false,
@@ -102,13 +103,10 @@ class WindowsBox {
       }
     })
 
-    // let modalPath = this.isPackaged()
-    //   ? `file://${this.selfDirname}/${this.htmlName}.html#${this.router}`
-    //   : `http://localhost:${this.port}/${this.htmlName}.html#${this.router}`
-    let modalPath = `file://${this.selfDirname}/${this.htmlName}.html#${this.router}`
+    let modalPath = this.isPackaged
+      ? `file://${this.selfDirname}/${this.htmlName}.html#${this.router}`
+      : `http://localhost:${this.port}/${this.htmlName}.html#${this.router}`
     win.loadURL(modalPath)
-    win.openDevTools()
-    console.log('挂载路径', modalPath)
     return win
   }
 
@@ -494,9 +492,9 @@ class WindowsBox {
     return this._windowList
   }
 
-  isPackaged() {
-    return process.env.NODE_ENV !== 'development'
-  }
+  // isPackaged() {
+  //   return process.env.NODE_ENV !== 'development'
+  // }
 }
 
 module.exports = WindowsBox
